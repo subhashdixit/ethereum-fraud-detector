@@ -1,0 +1,19 @@
+{
+  "Avg min between sent tnx": 12.84,
+  "Avg min between received tnx": 395.69,
+  "Time Diff between first and last (Mins)": 35959.58,
+  "Sent tnx": 2,
+  "Received Tnx": 4,
+  "Number of Created Contracts": 0,
+  "Unique Received From Addresses": 2,
+  "Unique Sent To Addresses": 2,
+  "min value received": 0.073509,
+  "max value received ": 5.0,
+  "avg val received": 1.45,
+  "min val sent": 0.025852,
+  "max val sent": 4.0,
+  "avg val sent": 1.306237,
+  "total Ether sent": 10.34692,
+  "total ether received": 25.67020723,
+  "total ether balance": 0.0015539999999999
+}
