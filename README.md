@@ -1,5 +1,7 @@
 # Ethereum Fraud Explorer
 
+**Live application:** [Open Ethereum Fraud Detector](https://ethereum-fraud-detector.onrender.com) · [Source code](https://github.com/subhashdixit/ethereum-fraud-detector)
+
 An end-to-end **historical fraud-classification learning app**: Flask UI, JSON API, bounded CSV scoring, threshold exploration, reproducible training, measured evaluation, Docker and CI/CD.
 
 The source contains 9,841 Ethereum account-summary rows and a binary `FLAG`. The app uses 17 fixed numeric behavioral summaries, excluding addresses, row IDs, token names and the outcome. It does not fetch live blockchain data or inspect a wallet address. Observed account histories can include information accumulated after a useful early-warning time; that timing is undocumented.
