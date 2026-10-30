@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ethereum-fraud-detector"
 version = "1.0.0"
-description = "Reproducible educational credit category classifier and Flask app"
+description = "Historical Ethereum account fraud classification and Flask app"
 requires-python = ">=3.10,<3.13"
 dynamic = ["dependencies"]
 [tool.setuptools.dynamic]
