@@ -1,0 +1,305 @@
+{
+  "version": "1.0.0",
+  "selected_model": "random_forest",
+  "threshold": 0.31,
+  "features": [
+    "Avg min between sent tnx",
+    "Avg min between received tnx",
+    "Time Diff between first and last (Mins)",
+    "Sent tnx",
+    "Received Tnx",
+    "Number of Created Contracts",
+    "Unique Received From Addresses",
+    "Unique Sent To Addresses",
+    "min value received",
+    "max value received ",
+    "avg val received",
+    "min val sent",
+    "max val sent",
+    "avg val sent",
+    "total Ether sent",
+    "total ether received",
+    "total ether balance"
+  ],
+  "classes": [
+    "0",
+    "1"
+  ],
+  "original_rows": 9841,
+  "source_sha256": "874e125be2ac6220a92c7dbacf6c6f1766c60e3966473406d6700090831f7d9a",
+  "source_url": "https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset",
+  "split_strategy": "grouped random 60/20/20; identical selected input vectors stay together",
+  "split_detail": {},
+  "split": {
+    "train": {
+      "rows": 6107,
+      "class_counts": {
+        "0": 4624,
+        "1": 1483
+      }
+    },
+    "validation": {
+      "rows": 1872,
+      "class_counts": {
+        "0": 1523,
+        "1": 349
+      }
+    },
+    "test": {
+      "rows": 1862,
+      "class_counts": {
+        "0": 1515,
+        "1": 347
+      }
+    }
+  },
+  "validation_candidates": {
+    "majority_baseline": {
+      "rows": 1872,
+      "accuracy": 0.8135683760683761,
+      "macro_f1": 0.44860088365243006,
+      "weighted_f1": 0.729934984831892,
+      "average_precision": 0.18643162393162394,
+      "roc_auc": 0.5,
+      "classification_report": {
+        "0": {
+          "precision": 0.8135683760683761,
+          "recall": 1.0,
+          "f1-score": 0.8972017673048601,
+          "support": 1523.0
+        },
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 349.0
+        },
+        "accuracy": 0.8135683760683761,
+        "macro avg": {
+          "precision": 0.40678418803418803,
+          "recall": 0.5,
+          "f1-score": 0.44860088365243006,
+          "support": 1872.0
+        },
+        "weighted avg": {
+          "precision": 0.6618935025385346,
+          "recall": 0.8135683760683761,
+          "f1-score": 0.729934984831892,
+          "support": 1872.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1523,
+          0
+        ],
+        [
+          349,
+          0
+        ]
+      ]
+    },
+    "logistic_regression": {
+      "rows": 1872,
+      "accuracy": 0.7259615384615384,
+      "macro_f1": 0.6667655610277101,
+      "weighted_f1": 0.7548467745984508,
+      "average_precision": 0.37470300988471844,
+      "roc_auc": 0.789851691447471,
+      "classification_report": {
+        "0": {
+          "precision": 0.9437609841827768,
+          "recall": 0.7051871306631649,
+          "f1-score": 0.8072153325817362,
+          "support": 1523.0
+        },
+        "1": {
+          "precision": 0.388283378746594,
+          "recall": 0.8166189111747851,
+          "f1-score": 0.5263157894736842,
+          "support": 349.0
+        },
+        "accuracy": 0.7259615384615384,
+        "macro avg": {
+          "precision": 0.6660221814646854,
+          "recall": 0.760903020918975,
+          "f1-score": 0.6667655610277101,
+          "support": 1872.0
+        },
+        "weighted avg": {
+          "precision": 0.8402023921436593,
+          "recall": 0.7259615384615384,
+          "f1-score": 0.7548467745984508,
+          "support": 1872.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1074,
+          449
+        ],
+        [
+          64,
+          285
+        ]
+      ]
+    },
+    "random_forest": {
+      "rows": 1872,
+      "accuracy": 0.9358974358974359,
+      "macro_f1": 0.8904167325219956,
+      "weighted_f1": 0.9346906510649201,
+      "average_precision": 0.9187688818289628,
+      "roc_auc": 0.9774395280013999,
+      "classification_report": {
+        "0": {
+          "precision": 0.9511254019292604,
+          "recall": 0.9711096520026264,
+          "f1-score": 0.9610136452241715,
+          "support": 1523.0
+        },
+        "1": {
+          "precision": 0.861198738170347,
+          "recall": 0.7822349570200573,
+          "f1-score": 0.8198198198198198,
+          "support": 349.0
+        },
+        "accuracy": 0.9358974358974359,
+        "macro avg": {
+          "precision": 0.9061620700498036,
+          "recall": 0.8766723045113418,
+          "f1-score": 0.8904167325219956,
+          "support": 1872.0
+        },
+        "weighted avg": {
+          "precision": 0.934360227969933,
+          "recall": 0.9358974358974359,
+          "f1-score": 0.9346906510649201,
+          "support": 1872.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1479,
+          44
+        ],
+        [
+          76,
+          273
+        ]
+      ]
+    }
+  },
+  "validation_selected_threshold": {
+    "rows": 1872,
+    "accuracy": 0.9412393162393162,
+    "macro_f1": 0.9090213432252887,
+    "weighted_f1": 0.9429745751090125,
+    "average_precision": 0.9187688818289628,
+    "roc_auc": 0.9774395280013999,
+    "classification_report": {
+      "0": {
+        "precision": 0.9829118250170882,
+        "recall": 0.9441891004596191,
+        "f1-score": 0.9631614199598124,
+        "support": 1523.0
+      },
+      "1": {
+        "precision": 0.7921760391198044,
+        "recall": 0.9283667621776505,
+        "f1-score": 0.8548812664907651,
+        "support": 349.0
+      },
+      "accuracy": 0.9412393162393162,
+      "macro avg": {
+        "precision": 0.8875439320684463,
+        "recall": 0.9362779313186348,
+        "f1-score": 0.9090213432252887,
+        "support": 1872.0
+      },
+      "weighted avg": {
+        "precision": 0.9473526427103831,
+        "recall": 0.9412393162393162,
+        "f1-score": 0.9429745751090125,
+        "support": 1872.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1438,
+        85
+      ],
+      [
+        25,
+        324
+      ]
+    ]
+  },
+  "test": {
+    "rows": 1862,
+    "accuracy": 0.9264232008592911,
+    "macro_f1": 0.8873078035990785,
+    "weighted_f1": 0.928954826388439,
+    "average_precision": 0.9277401034171371,
+    "roc_auc": 0.9762594991487621,
+    "classification_report": {
+      "0": {
+        "precision": 0.9771468144044322,
+        "recall": 0.9313531353135314,
+        "f1-score": 0.9537005745184184,
+        "support": 1515.0
+      },
+      "1": {
+        "precision": 0.7511961722488039,
+        "recall": 0.9048991354466859,
+        "f1-score": 0.8209150326797385,
+        "support": 347.0
+      },
+      "accuracy": 0.9264232008592911,
+      "macro avg": {
+        "precision": 0.864171493326618,
+        "recall": 0.9181261353801087,
+        "f1-score": 0.8873078035990785,
+        "support": 1862.0
+      },
+      "weighted avg": {
+        "precision": 0.9350389342604992,
+        "recall": 0.9264232008592911,
+        "f1-score": 0.928954826388439,
+        "support": 1862.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1411,
+        104
+      ],
+      [
+        33,
+        314
+      ]
+    ]
+  },
+  "permutation_importance": {
+    "Avg min between sent tnx": 0.013119021458750879,
+    "Avg min between received tnx": 0.048741968588467244,
+    "Time Diff between first and last (Mins)": 0.07840851901416042,
+    "Sent tnx": 0.014874537857509437,
+    "Received Tnx": 0.007840693709127433,
+    "Number of Created Contracts": 0.0060458404997852195,
+    "Unique Received From Addresses": 0.11765832102877767,
+    "Unique Sent To Addresses": 0.0017268552920685816,
+    "min value received": 0.021029112403082324,
+    "max value received ": 0.006055111668970585,
+    "avg val received": 0.03320305368128854,
+    "min val sent": 0.010000244092467137,
+    "max val sent": -6.301357718341283e-05,
+    "avg val sent": 0.0039346098007194685,
+    "total Ether sent": 0.006864697699453748,
+    "total ether received": 0.01845423032474795,
+    "total ether balance": 0.013048558674975267
+  },
+  "python": "3.10.0",
+  "sklearn": "1.6.1",
+  "artifact_sha256": "2de5d5b91f49ca6d2608f1912f49c4c03f53b2c204630c8b73548cc348b223d5"
+}

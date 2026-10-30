@@ -1,0 +1,103 @@
+{
+  "package": "ethereum_fraud",
+  "title": "Ethereum Fraud Explorer",
+  "old": "Fraud_Detection",
+  "file": "transaction_dataset.csv",
+  "target": "FLAG",
+  "url": "https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset",
+  "download": "https://www.kaggle.com/api/v1/datasets/download/vagifa/ethereum-frauddetection-dataset",
+  "features": {
+    "Avg min between sent tnx": [
+      "Average minutes between sent transactions",
+      0,
+      1000000000000000.0
+    ],
+    "Avg min between received tnx": [
+      "Average minutes between received transactions",
+      0,
+      1000000000000000.0
+    ],
+    "Time Diff between first and last (Mins)": [
+      "Observed account lifetime (minutes)",
+      0,
+      1000000000000000.0
+    ],
+    "Sent tnx": [
+      "Sent transaction count",
+      0,
+      1000000000000000.0
+    ],
+    "Received Tnx": [
+      "Received transaction count",
+      0,
+      1000000000000000.0
+    ],
+    "Number of Created Contracts": [
+      "Created contracts",
+      0,
+      1000000000000000.0
+    ],
+    "Unique Received From Addresses": [
+      "Unique incoming addresses",
+      0,
+      1000000000000000.0
+    ],
+    "Unique Sent To Addresses": [
+      "Unique outgoing addresses",
+      0,
+      1000000000000000.0
+    ],
+    "min value received": [
+      "Minimum received value",
+      0,
+      1000000000000000.0
+    ],
+    "max value received ": [
+      "Maximum received value",
+      0,
+      1000000000000000.0
+    ],
+    "avg val received": [
+      "Average received value",
+      0,
+      1000000000000000.0
+    ],
+    "min val sent": [
+      "Minimum sent value",
+      0,
+      1000000000000000.0
+    ],
+    "max val sent": [
+      "Maximum sent value",
+      0,
+      1000000000000000.0
+    ],
+    "avg val sent": [
+      "Average sent value",
+      0,
+      1000000000000000.0
+    ],
+    "total Ether sent": [
+      "Total ETH sent",
+      0,
+      1000000000000000.0
+    ],
+    "total ether received": [
+      "Total ETH received",
+      0,
+      1000000000000000.0
+    ],
+    "total ether balance": [
+      "Net ETH balance",
+      -1000000000000000.0,
+      1000000000000000.0
+    ]
+  },
+  "integer": [
+    "Sent tnx",
+    "Received Tnx",
+    "Number of Created Contracts",
+    "Unique Received From Addresses",
+    "Unique Sent To Addresses"
+  ]
+}
