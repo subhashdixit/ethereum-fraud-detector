@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "repository": "ethereum-fraud-detector",
+  "recommended_python": "3.11.11",
+  "resolver": "uv==0.13.6",
+  "files": [
+    {
+      "path": "requirements-dev.in",
+      "sha256": "f9c5dfa95578159677f4df7c664e23a5bae51cf8bd8409e96746a3d3a72cd95e"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "1305d55f4311759a4eb7535892e0027c7da7a631f2cd2102feeb9f2632ceeae5"
+    },
+    {
+      "path": "requirements.in",
+      "sha256": "47c87ddf6ec03ae8b81b688564b0e19db2540bf37d18f0ee266b0348286becb0"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "edecf2c028b7f01681a34dc951c60e9d88bd013bd713218e82102c27e8def8b3"
+    }
+  ]
+}
