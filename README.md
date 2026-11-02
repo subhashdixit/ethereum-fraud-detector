@@ -345,3 +345,14 @@ A high model score is not evidence sufficient to accuse an individual or block a
 - [Classification and ranking metrics](https://scikit-learn.org/stable/modules/model_evaluation.html)
 - [Model persistence security](https://scikit-learn.org/stable/model_persistence.html)
 - [Render Docker deployment](https://render.com/docs/docker)
+
+## Exact local dependency versions
+
+[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
+
+```bash
+python3.11 -m venv .venv
+# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
+python -m pip install -r requirements.txt
+python -m pip check
+```
