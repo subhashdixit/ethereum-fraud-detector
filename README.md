@@ -1,65 +1,40 @@
 # Ethereum Fraud Explorer
 
-**Live application:** [Open Ethereum Fraud Detector](https://ethereum-fraud-detector.onrender.com) · [Source code](https://github.com/subhashdixit/ethereum-fraud-detector)
+## 1. Project overview
 
-An end-to-end **historical fraud-classification learning app**: Flask UI, JSON API, bounded CSV scoring, threshold exploration, reproducible training, measured evaluation, Docker and CI/CD.
+Flask app for historical Ethereum account-label classification, grouped evaluation and CSV scoring.
 
-The source contains 9,841 Ethereum account-summary rows and a binary `FLAG`. The app uses 17 fixed numeric behavioral summaries, excluding addresses, row IDs, token names and the outcome. It does not fetch live blockchain data or inspect a wallet address. Observed account histories can include information accumulated after a useful early-warning time; that timing is undocumented.
+[Live demo](https://ethereum-fraud-detector.onrender.com) · [Source repository](https://github.com/subhashdixit/ethereum-fraud-detector)
 
-> Educational research demonstration. A source fraud label or model result is not proof of wrongdoing. Scores are uncalibrated; do not use this app to block payments, accuse wallet owners or make financial decisions. Use synthetic examples and never upload private financial information.
+![Ethereum Fraud Explorer application screen](docs/images/application.png)
 
-[Run locally](#run-locally) · [Use the application](#use-the-application) · [Training](#training-and-model-selection) · [Measured results](#measured-results) · [Deployment](#deployment-on-render)
+## 2. Motivation and problem statement
 
-## Problem statement
+### Objective
+
+Compare models on historical Ethereum account fraud labels.
+
+### Problem statement
+
+Addresses and IDs can make a model memorize the source instead of learning behavioral associations.
+
+### Motivation
+
+A grouped holdout gives a more meaningful test of how numeric behavior features transfer to unseen profiles.
+
+## 3. Solution and scope
+
+**Inputs** — Numeric Ethereum account summaries. **Outputs** — Historical fraud-label score and batch output.
+
+### Problem statement
 
 The supervised binary task predicts the source label: `0` means non-fraud and `1` means fraud. Real fraud is often rare, and the cost of a false alarm differs from the cost of a missed fraud. Therefore, a useful evaluation needs ranking metrics, per-class precision/recall and a clear threshold, rather than a headline accuracy number alone.
 
 The app demonstrates those concepts using historical data. It supports a synthetic form example, all required source-format numeric fields, CSV batch scoring, a JSON endpoint, measured model results and readiness/version checks. Original notebooks and reports remain available; the archived README preserves their original description. The web app trains a new reviewed pipeline rather than trusting an old serialized model.
 
-## Architecture
+## 4. Quick start and usage
 
-```mermaid
-flowchart LR
-    A[Form or source-format CSV] --> B[Flask and shared validation]
-    C[JSON client] --> B
-    B --> D[Saved imputation pipeline]
-    D --> E[Saved classifier]
-    E --> F[Relative class scores]
-    F --> G[Chosen decision threshold]
-    G --> H[Source label and explanation]
-    I[Versioned model and metrics] --> E
-```
-
-The prediction service is a class because it owns a loaded model and report reused across requests. Input validation and metric calculation are functions. Training is an offline script; web requests never retrain. The exact preprocessing is serialized with the estimator, avoiding a different feature order or imputation rule at prediction time.
-
-## Run locally
-
-Use Python 3.10 or 3.11 and the pinned scikit-learn 1.6.1 environment.
-
-```bash
-git clone https://github.com/subhashdixit/ethereum-fraud-detector.git
-cd ethereum-fraud-detector
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements-dev.txt
-pip install --no-deps -e .
-python -m pip check
-flask --app wsgi:app run --host 127.0.0.1 --port 8000
-```
-
-On Windows, activate with `.venv\Scripts\Activate.ps1`; use Flask locally or Docker for a Linux production runtime. Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The reviewed model is committed, so the application works without downloading raw data or retraining.
-
-For production-style local serving on Linux/macOS:
-
-```bash
-gunicorn --config gunicorn.conf.py wsgi:app
-python scripts/smoke_test.py --url http://127.0.0.1:8000 --attempts 3
-```
-
-`PORT` sets the listening port; `MODEL_DIR` can select a trusted matching model/report/sample directory. Run commands from the repository root.
-
-## Use the application
+### Use the application
 
 1. Start with the synthetic profile, formed from training medians. It is not a labeled real transaction, so there is no promised correct category for this artificial combination.
 2. Enter numeric source features with the documented meanings. Blank cells or JSON `null` use the fitted training imputer. Zero is an observed value, not missing.
@@ -70,7 +45,7 @@ python scripts/smoke_test.py --url http://127.0.0.1:8000 --attempts 3
 
 The maximum request body is 1 MiB. Missing required columns, invalid/non-finite values, impossible numeric ranges and entirely missing rows fail explicitly. Extra columns are ignored. Broad bounds are sanity checks, not an out-of-distribution detector. Application code does not persist uploads; hosting infrastructure can still retain routine request metadata.
 
-### Input dictionary
+#### Input dictionary
 
 | Source field | Meaning |
 |---|---|
@@ -94,7 +69,79 @@ The maximum request body is 1 MiB. Missing required columns, invalid/non-finite 
 
 CSV header spelling is exact, including the trailing space in `max value received `. Start with the downloaded sample to avoid silently changing that source name. The account-summary observation horizon and aggregation boundaries must match the source; the app does not calculate them from an address.
 
-## JSON and CSV API
+## 5. High-level architecture
+
+### Architecture
+
+```mermaid
+flowchart LR
+    A[Form or source-format CSV] --> B[Flask and shared validation]
+    C[JSON client] --> B
+    B --> D[Saved imputation pipeline]
+    D --> E[Saved classifier]
+    E --> F[Relative class scores]
+    F --> G[Chosen decision threshold]
+    G --> H[Source label and explanation]
+    I[Versioned model and metrics] --> E
+```
+
+The prediction service is a class because it owns a loaded model and report reused across requests. Input validation and metric calculation are functions. Training is an offline script; web requests never retrain. The exact preprocessing is serialized with the estimator, avoiding a different feature order or imputation rule at prediction time.
+
+## 6. End-to-end request workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Project interface
+    participant Engine as Prediction service
+    User->>UI: Provide Numeric Ethereum account summaries
+    UI->>Engine: Process validated input
+    Engine->>Engine: Validate the fixed feature schema, score and apply threshold
+    Engine-->>UI: Historical fraud-label score and batch output
+    UI-->>User: Present result or input feedback
+```
+
+## 7. Data sources, inputs, and outputs
+
+| Input | Processing | Output |
+| --- | --- | --- |
+| Numeric Ethereum account summaries | Validate the fixed feature schema, score and apply threshold | Historical fraud-label score and batch output |
+
+### Source data and reproducibility
+
+Original dataset: [https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset](https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset). Raw records are excluded from Git and the Docker image. The reviewed pipeline, metrics and a synthetic example are included.
+
+Download the source and verify the recorded training hash:
+
+```bash
+python scripts/download_data.py
+python scripts/train.py
+python scripts/plot_results.py
+# Train a candidate without replacing reviewed artifacts:
+python scripts/train.py --output-dir /tmp/fraud-candidate
+```
+
+The downloader uses the original Kaggle public endpoint, extracts only the configured CSV, bounds its size and checks its SHA-256 against the reviewed report. If Kaggle requires authentication or changes its download response, obtain the dataset from the linked source page and place `transaction_dataset.csv` under `data/`. Do not substitute a synthetic dataset and describe its metrics as the original benchmark.
+
+The downloaded source has **9,841 rows**. Consult the dataset page for its license, terms, provenance and attribution; repository code licensing does not automatically license a third-party dataset. Data hashes establish the exact input bytes, not data ownership or label validity.
+
+## 8. Data flow and ETL pipeline
+
+```mermaid
+flowchart LR
+    A["Numeric Ethereum account summaries"] --> B["Validate the fixed feature schema, score and apply threshold"] --> C["Historical fraud-label score and batch output"]
+```
+
+```mermaid
+flowchart LR
+    A["Versioned dataset"] --> B["Validate and partition"] --> C["Fit candidate pipeline"] --> D["Evaluate and export"] --> E["Load serving artifact"]
+```
+
+## 9. Low-level design and interfaces
+
+Implementation entry points are [`wsgi.py`](<wsgi.py>), [`scripts/train.py`](<scripts/train.py>), [`src/ethereum_fraud/schema.py`](<src/ethereum_fraud/schema.py>), [`src/ethereum_fraud/service.py`](<src/ethereum_fraud/service.py>), [`src/ethereum_fraud/web.py`](<src/ethereum_fraud/web.py>).
+
+### JSON and CSV API
 
 | Route | Purpose |
 |---|---|
@@ -119,25 +166,20 @@ Each prediction contains `category` (`"0"` or `"1"`), a description and scores f
 
 Bad input returns 400, oversized bodies 413, missing routes 404 and unexpected failures 500 with a generic response. The service has no authentication or per-user rate limiter; public-demo limits do not make it a production payment API.
 
-## Source data and reproducibility
+## 10. Concepts and algorithms
 
-Original dataset: [https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset](https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset). Raw records are excluded from Git and the Docker image. The reviewed pipeline, metrics and a synthetic example are included.
+The central operation is validate the fixed feature schema, score and apply threshold. The repository exposes the source, calculations, and output so each stage can be inspected.
 
-Download the source and verify the recorded training hash:
+## 11. Technology choices and dependencies
 
-```bash
-python scripts/download_data.py
-python scripts/train.py
-python scripts/plot_results.py
-# Train a candidate without replacing reviewed artifacts:
-python scripts/train.py --output-dir /tmp/fraud-candidate
-```
+- **Python**. Keep dataset preparation, fitting, and evaluation reproducible outside the serving path.
+- **Flask**. Share the same service across interactive and HTTP entry points.
 
-The downloader uses the original Kaggle public endpoint, extracts only the configured CSV, bounds its size and checks its SHA-256 against the reviewed report. If Kaggle requires authentication or changes its download response, obtain the dataset from the linked source page and place `transaction_dataset.csv` under `data/`. Do not substitute a synthetic dataset and describe its metrics as the original benchmark.
+[Dependency versions and runtime rationale](DEPENDENCIES.md)
 
-The downloaded source has **9,841 rows**. Consult the dataset page for its license, terms, provenance and attribution; repository code licensing does not automatically license a third-party dataset. Data hashes establish the exact input bytes, not data ownership or label validity.
+## 12. Training, inference, and evaluation
 
-## Training and model selection
+### Training and model selection
 
 GroupShuffleSplit assigns identical selected numeric feature vectors to the same partition, using seeds 42 and 43. Actual row fractions vary with group size. Addresses are excluded from model inputs. Grouping by input values does not establish independence among related wallets, scam campaigns or collection sources. Future-period and independently sourced validation remain necessary.
 
@@ -181,7 +223,7 @@ Candidates are selected by **validation average precision**, a threshold-free ra
 
 Selected model: **random forest**, deployed threshold **0.31**. Candidate threshold-0.50 metrics and final threshold metrics are distinct and both are retained in `models/metrics.json`.
 
-## Measured results
+### Measured results
 
 | Held-out test metric, default threshold | Result |
 |---|---:|
@@ -213,13 +255,13 @@ Rows are actual labels and columns are predictions: **1,411 true negatives**, **
 
 **Accuracy** counts every correct label equally. The test majority-only accuracy is **1,515/1,862 = 81.36%**. Compare that baseline before celebrating the model's accuracy. No current real-world fraud-prevention performance is established by this historical holdout.
 
-### Feature importance
+#### Feature importance
 
 ![Validation permutation importance](docs/images/feature-importance.png)
 
 The chart shuffles one validation field and measures the AP drop, averaged over three repeats on at most 3,000 validation rows. With few fraud examples, importance can be noisy; correlated features can share importance. This is global predictive dependence, not causation or an explanation of one flagged person. The chart does not establish that changing a feature would prevent fraud.
 
-## Testing and code quality
+### Testing and code quality
 
 ```bash
 python -m black --check src tests scripts wsgi.py gunicorn.conf.py
@@ -234,7 +276,81 @@ A checksum detects accidental artifact mismatch, not malicious changes to both t
 
 Browser checks complement unit tests: the page must render, the example form must produce a result, the matrix must be readable and the mobile layout must remain usable. Passing lint does not prove that the ML assumptions are correct; evaluation and data audits are separate work.
 
-## CI/CD: what happens after a change
+Validation code is available in [`tests/test_application.py`](<tests/test_application.py>).
+
+## 13. Limitations and data handling
+
+> Educational research demonstration. A source fraud label or model result is not proof of wrongdoing. Scores are uncalibrated; do not use this app to block payments, accuse wallet owners or make financial decisions. Use synthetic examples and never upload private financial information.
+
+### Troubleshooting and responsible interpretation
+
+Run from the repository root or set `MODEL_DIR` explicitly. Restore matching trusted model/report files if their hashes disagree; never edit the hash merely to silence the check. Keep the pinned scikit-learn version. If CSV headers fail, use the downloaded sample. For free-host cold starts, allow time to wake and inspect logs if readiness remains unavailable.
+
+A high model score is not evidence sufficient to accuse an individual or block a transaction. This demonstration has no production incident response, appeal process, fraud-label feedback, drift alerts or independent external validation. Monitor model and data drift separately from server uptime if extending the project. Do not log private transaction profiles.
+
+## 14. Installation and local setup
+
+### Run locally
+
+Use Python 3.10 or 3.11 and the pinned scikit-learn 1.6.1 environment.
+
+```bash
+git clone https://github.com/subhashdixit/ethereum-fraud-detector.git
+cd ethereum-fraud-detector
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements-dev.txt
+pip install --no-deps -e .
+python -m pip check
+flask --app wsgi:app run --host 127.0.0.1 --port 8000
+```
+
+On Windows, activate with `.venv\Scripts\Activate.ps1`; use Flask locally or Docker for a Linux production runtime. Open [http://127.0.0.1:8000](http://127.0.0.1:8000). The reviewed model is committed, so the application works without downloading raw data or retraining.
+
+For production-style local serving on Linux/macOS:
+
+```bash
+gunicorn --config gunicorn.conf.py wsgi:app
+python scripts/smoke_test.py --url http://127.0.0.1:8000 --attempts 3
+```
+
+`PORT` sets the listening port; `MODEL_DIR` can select a trusted matching model/report/sample directory. Run commands from the repository root.
+
+### Exact local dependency versions
+
+[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
+
+```bash
+python3.11 -m venv .venv
+# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
+python -m pip install -r requirements.txt
+python -m pip check
+```
+
+## 15. Repository structure
+
+### Repository structure
+
+```text
+src/ethereum_fraud/           schema, service, Flask routes, templates and styling
+scripts/download_data.py    original-source download and hash verification
+scripts/train.py            reproducible model and threshold selection
+scripts/plot_results.py     measured evaluation figures
+scripts/smoke_test.py       readiness and real HTTP prediction check
+configs/project.json       fixed source and feature configuration
+models/                    reviewed pipeline, report and synthetic example
+tests/                     validation, threshold, API, CSV and artifact tests
+data/                      local-only raw dataset, ignored by Git
+archive/                   original README
+Dockerfile                 non-root portable serving image
+render.yaml                free Docker deployment configuration
+.github/workflows/ci.yml   Python checks and container smoke test
+```
+
+## 16. Deployment and operations
+
+### CI/CD: what happens after a change
 
 ```mermaid
 flowchart LR
@@ -254,7 +370,7 @@ flowchart LR
 
 Benefits include repeatability, early error detection and traceable releases. Costs include build time, dependency maintenance and platform configuration. Passing tests does not guarantee good predictions, so model evaluation and release review remain necessary. The included CI does not automatically retrain or promote new models.
 
-## Docker: what it adds
+### Docker: what it adds
 
 Docker packages the Python runtime, application, dependencies and reviewed model into an image. A running container is an instance of that image. It helps a developer and CI use a similar environment, even when the developer's laptop runs a different operating system.
 
@@ -268,7 +384,7 @@ The container runs as a non-root user and excludes raw workbooks from the image.
 
 Docker improves packaging consistency but adds image size, build time and another layer to maintain. It is not a virtual machine, automatic security guarantee or mandatory requirement for Flask. This project uses **Docker on Render**, so CI and hosting build the same image definition. The image contains the reviewed fraud model and excludes raw source CSVs.
 
-## Deployment on Render
+### Deployment on Render
 
 **Hosting** provides the computer and public endpoint where an app runs. **Deployment** installs a particular application version into that environment. Render is the hosting platform; GitHub stores the source; GitHub Actions runs quality checks; Gunicorn serves Flask requests.
 
@@ -297,7 +413,7 @@ A service being marked live only proves that it started. The prediction check ve
 
 Render's free services sleep after 15 idle minutes and can take about a minute to wake. Free web services share 750 running hours per workspace per calendar month; other portfolio apps consume the same allowance. Local files are ephemeral. Bandwidth and build limits are separate. This application uses no database and stores no user uploads. A free demo is not an always-on production availability promise. See [Render free-service documentation](https://render.com/docs/free).
 
-## Versioning, retraining and rollback
+### Versioning, retraining and rollback
 
 There are several separate versions:
 
@@ -314,31 +430,9 @@ For rollback, prefer reverting the problematic merge through a reviewed Git comm
 
 Rollback improves recovery time but cannot undo already consumed outputs, and model/schema changes can break compatibility. That is why the artifact hash, feature contract, version and smoke checks travel together.
 
-## Repository structure
+## 17. License, credits, and support
 
-```text
-src/ethereum_fraud/           schema, service, Flask routes, templates and styling
-scripts/download_data.py    original-source download and hash verification
-scripts/train.py            reproducible model and threshold selection
-scripts/plot_results.py     measured evaluation figures
-scripts/smoke_test.py       readiness and real HTTP prediction check
-configs/project.json       fixed source and feature configuration
-models/                    reviewed pipeline, report and synthetic example
-tests/                     validation, threshold, API, CSV and artifact tests
-data/                      local-only raw dataset, ignored by Git
-archive/                   original README
-Dockerfile                 non-root portable serving image
-render.yaml                free Docker deployment configuration
-.github/workflows/ci.yml   Python checks and container smoke test
-```
-
-## Troubleshooting and responsible interpretation
-
-Run from the repository root or set `MODEL_DIR` explicitly. Restore matching trusted model/report files if their hashes disagree; never edit the hash merely to silence the check. Keep the pinned scikit-learn version. If CSV headers fail, use the downloaded sample. For free-host cold starts, allow time to wake and inspect logs if readiness remains unavailable.
-
-A high model score is not evidence sufficient to accuse an individual or block a transaction. This demonstration has no production incident response, appeal process, fraud-label feedback, drift alerts or independent external validation. Monitor model and data drift separately from server uptime if extending the project. Do not log private transaction profiles.
-
-## Further reading
+### Further reading
 
 - [Original dataset](https://www.kaggle.com/datasets/vagifa/ethereum-frauddetection-dataset)
 - [Scikit-learn preprocessing and leakage](https://scikit-learn.org/stable/common_pitfalls.html)
@@ -346,13 +440,4 @@ A high model score is not evidence sufficient to accuse an individual or block a
 - [Model persistence security](https://scikit-learn.org/stable/model_persistence.html)
 - [Render Docker deployment](https://render.com/docs/docker)
 
-## Exact local dependency versions
-
-[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
-
-```bash
-python3.11 -m venv .venv
-# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
-python -m pip install -r requirements.txt
-python -m pip check
-```
+The repository does not contain a root LICENSE file. Check upstream and data-source terms before reuse. Report reproducible issues through [GitHub Issues](https://github.com/subhashdixit/ethereum-fraud-detector/issues).
